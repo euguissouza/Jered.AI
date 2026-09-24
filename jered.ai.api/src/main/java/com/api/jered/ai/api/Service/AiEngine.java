@@ -4,9 +4,7 @@ package com.api.jered.ai.api.Service;
 import com.google.genai.Client;
 
 
-import dev.langchain4j.data.message.TextContent;
 import dev.langchain4j.model.googleai.GeminiFiles;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
