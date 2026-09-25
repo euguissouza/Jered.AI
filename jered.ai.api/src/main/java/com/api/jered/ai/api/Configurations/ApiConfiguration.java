@@ -12,8 +12,9 @@ public class ApiConfiguration {
     @Bean
     public GeminiFiles filesApi(){
         String apiKey = System.getenv("GEMINI_API_KEY");
-        return GeminiFiles.builder().apiKey(apiKey).build();
+        return GeminiFiles.builder()
+                .apiKey(apiKey)
+                .build();
     }
-
 
 }

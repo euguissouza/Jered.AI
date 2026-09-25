@@ -21,8 +21,8 @@ public class IAController {
 
 
     @PostMapping("/post")
-    public ResponseEntity<Byte[]> enviaDownload(@RequestParam("file")MultipartFile file)throws Exception{
-        return request.DownloadFile(file);
+    public void enviaDownload(@RequestParam("file")MultipartFile file)throws Exception{
+        request.Executar(file);
     }
 
 
