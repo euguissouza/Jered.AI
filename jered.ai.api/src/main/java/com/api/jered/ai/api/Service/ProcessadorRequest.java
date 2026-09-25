@@ -1,11 +1,17 @@
 package com.api.jered.ai.api.Service;
 
+import com.api.jered.ai.api.Tool.Prompt;
+import dev.langchain4j.service.SystemMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-public class ProcessadorRequest{
+import java.io.IOException;
+
+@Service
+public class ProcessadorRequest implements Prompt {
 
     private AiEngine engine;
 
@@ -23,9 +29,12 @@ public class ProcessadorRequest{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+
     }
 
-
-
-
+    @Override
+    public void Executar(MultipartFile files) throws Exception {
+        DownloadFile(files);
+    }
 }
