@@ -1,6 +1,7 @@
 package com.api.jered.ai.api.Service;
 
 
+import com.api.jered.ai.api.Tool.Prompt;
 import com.google.genai.Client;
 
 
@@ -16,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 @Service
-public class AiEngine {
+public class AiEngine implements Prompt {
 
 
     private final GeminiFiles filesApi;
@@ -38,6 +39,11 @@ public class AiEngine {
             Files.deleteIfExists(arquivoTemporario);
         }
         return uploadArquivo(file);
+    }
+
+    @Override
+    public void Executar(MultipartFile files) throws Exception {
+        uploadArquivo(files);
     }
 
 }

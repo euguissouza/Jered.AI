@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Service
-public class ProcessadorRequest implements Prompt {
+public class ProcessadorRequest {
 
     private AiEngine engine;
 
@@ -33,8 +33,5 @@ public class ProcessadorRequest implements Prompt {
 
     }
 
-    @Override
-    public void Executar(MultipartFile files) throws Exception {
-        DownloadFile(files);
-    }
+
 }
