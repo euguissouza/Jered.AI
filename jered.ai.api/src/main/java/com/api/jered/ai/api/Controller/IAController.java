@@ -22,7 +22,7 @@ public class IAController {
 
     @PostMapping("/post")
     public void enviaDownload(@RequestParam("file")MultipartFile file)throws Exception{
-        request.Executar(file);
+        request.DownloadFile(file);
     }
 
 
