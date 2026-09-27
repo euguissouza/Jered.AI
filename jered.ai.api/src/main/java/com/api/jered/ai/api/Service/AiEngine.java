@@ -19,7 +19,6 @@ import java.util.Base64;
 @Service
 public class AiEngine implements Prompt {
 
-
     private final GeminiFiles filesApi;
 
     public AiEngine(GeminiFiles filesApi) {
@@ -35,10 +34,11 @@ public class AiEngine implements Prompt {
                     arquivoTemporario,
                     file.getOriginalFilename()
             );
+            return new  Byte[0];
         } finally {
             Files.deleteIfExists(arquivoTemporario);
         }
-        return uploadArquivo(file);
+
     }
 
     @Override
