@@ -29,7 +29,7 @@ public class ApiConfiguration {
         return GoogleAiGeminiChatModel
                 .builder()
                 .apiKey(System.getenv("GEMINI_API_KEY"))
-                .modelName("gemini-3.7-flash")
+                .modelName("gemini-3.5-flash")
                 .responseFormat(ResponseFormat.TEXT)
                 .build();
     }

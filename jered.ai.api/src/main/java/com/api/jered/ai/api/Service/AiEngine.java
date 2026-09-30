@@ -52,7 +52,7 @@ public class AiEngine implements Prompt {
          String input = sc.nextLine();
          ChatResponse response = chatModel.chat(ChatRequest.builder().messages(UserMessage.from(input)).build());
          String res = response.aiMessage().text();
-         System.out.println("JERED" + res);
+         System.out.println("JERED: " + res);
      }
 
 
