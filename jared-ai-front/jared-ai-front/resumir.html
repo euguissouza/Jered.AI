@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Resumir material – Jared.AI</title>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <a class="marca" href="index.html">Jared.AI</a>
+    <div class="barra-a11y" role="group" aria-label="Acessibilidade">
+      <button type="button" data-a11y="menos" aria-label="Diminuir letras">A−</button>
+      <button type="button" data-a11y="mais" aria-label="Aumentar letras">A+</button>
+      <button type="button" data-a11y="contraste" aria-pressed="false">Alto contraste</button>
+    </div>
+  </header>
+
+  <main id="conteudo" class="estreito">
+    <h1>Resumir material de estudo</h1>
+    <p>Aceitamos PDF, Word (.doc, .docx) e TXT, até 10 MB.</p>
+
+    <label id="zona-upload" class="zona" for="arquivo">
+      <span class="zona-titulo">Arraste o arquivo até aqui</span>
+      <span>ou clique para escolher no computador</span>
+      <strong id="nome-arquivo"></strong>
+      <input id="arquivo" class="so-leitor" type="file" accept=".pdf,.doc,.docx,.txt">
+    </label>
+
+    <button id="btn-resumir" class="botao" type="button" disabled>Gerar resumo</button>
+    <p id="status" role="status" aria-live="polite" hidden></p>
+
+    <section id="resultado" class="resultado" tabindex="-1" hidden aria-labelledby="titulo-resumo">
+      <h2 id="titulo-resumo">Seu resumo</h2>
+      <div id="texto-resumo"></div>
+      <div class="acoes">
+        <button id="btn-ouvir" class="botao-sec" type="button">Ouvir</button>
+        <button id="btn-parar" class="botao-sec" type="button">Parar áudio</button>
+        <button id="btn-copiar" class="botao-sec" type="button">Copiar texto</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape"><p>Jared.AI · Projeto extensionista</p></footer>
+
+  <script type="module" src="js/acessibilidade.js"></script>
+  <script type="module" src="js/resumir.js"></script>
+</body>
+</html>
