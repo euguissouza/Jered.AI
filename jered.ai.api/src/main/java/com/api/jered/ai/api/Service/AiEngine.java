@@ -47,12 +47,14 @@ public class AiEngine implements Prompt {
 
     }
      public void ChatTerminal(){
-         Scanner sc = new Scanner(System.in);
-         System.out.println("Chat: ");
-         String input = sc.nextLine();
-         ChatResponse response = chatModel.chat(ChatRequest.builder().messages(UserMessage.from(input)).build());
-         String res = response.aiMessage().text();
-         System.out.println("JERED: " + res);
+        while(true) {
+            Scanner sc = new Scanner(System.in);
+            System.out.printf("Chat: ");
+            String input = sc.nextLine();
+            ChatResponse response = chatModel.chat(ChatRequest.builder().messages(UserMessage.from(input)).build());
+            String res = response.aiMessage().text();
+            System.out.println("JERED: " + res);
+        }
      }
 
 
