@@ -2,65 +2,56 @@ package com.api.jered.ai.api.Service;
 
 
 
-import com.api.jered.ai.api.Tool.Prompt;
+import com.google.genai.Client;
 
-
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.request.ChatRequest;
-import dev.langchain4j.model.chat.response.ChatResponse;
-import dev.langchain4j.model.googleai.GeminiFiles;
+import com.google.genai.gaos.models.interactions.*;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Scanner;
+import java.util.List;
 
 
 @Service
-public class AiEngine implements Prompt {
+public class AiEngine {
 
-    private final GeminiFiles filesApi;
-    private ChatModel chatModel;
+    Client client = new Client();
 
-    public AiEngine(GeminiFiles filesApi,  ChatModel chatModel) {
-        this.filesApi = filesApi;
-        this.chatModel = chatModel;
+    private ProcessadorRequest request;
+
+    public AiEngine(@Lazy ProcessadorRequest request, Client client) {
+        this.request = request;
+        this.client = client;
     }
 
-    public Byte[] uploadArquivo(MultipartFile file) throws IOException, InterruptedException {
+    public byte[] processaDados(MultipartFile file) throws IOException {
+        Content docContent = request.uploadFile(file);
 
-        Path arquivoTemporario = Files.createTempFile("upload", "-" + file.getOriginalFilename());
-        try {
-            file.transferTo(arquivoTemporario.toFile());
-            GeminiFiles.GeminiFile uploadedFile = filesApi.uploadFile(
-                    arquivoTemporario,
-                    file.getOriginalFilename()
-            );
-            return new  Byte[0];
-        } finally {
-            Files.deleteIfExists(arquivoTemporario);
-        }
+        Content textContent = TextContent.builder()
+                .text("Resuma para mim esse arquivo e me devolva como .pdf")
+                .build();
 
+        CreateModelInteraction llmInteraciton = CreateModelInteraction.builder()
+                .model(Model.of("gemini-3.8-flash"))
+                .input(InteractionsInput.ofContent(List.of(docContent, textContent)))
+                .build();
+
+        return new byte[0];
     }
-     public void ChatTerminal(){
-        while(true) {
-            Scanner sc = new Scanner(System.in);
-            System.out.printf("Chat: ");
-            String input = sc.nextLine();
-            ChatResponse response = chatModel.chat(ChatRequest.builder().messages(UserMessage.from(input)).build());
-            String res = response.aiMessage().text();
-            System.out.println("JERED: " + res);
-        }
-     }
 
 
-    @Override
-    public void Executar(MultipartFile files) throws Exception {
-        uploadArquivo(files);
+    public ResponseEntity<byte[]> geraDownload(@Param("file")  MultipartFile file) throws IOException {
+        byte[] geraDoc = processaDados(file);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "imagem_gerada.png");
+        return ResponseEntity.ok().headers(headers).body(geraDoc);
     }
 
 }
