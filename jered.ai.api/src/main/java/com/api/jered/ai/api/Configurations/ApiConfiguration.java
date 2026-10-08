@@ -1,12 +1,11 @@
 package com.api.jered.ai.api.Configurations;
 
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.request.ChatRequest;
-import dev.langchain4j.model.chat.request.ResponseFormat;
-import dev.langchain4j.model.chat.response.ChatResponse;
-import dev.langchain4j.model.googleai.GeminiFiles;
-import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
+
+import com.google.genai.Client;
+import com.google.genai.gaos.models.interactions.Content;
+import com.google.genai.gaos.models.interactions.DocumentContent;
+import com.google.genai.types.File;
+import com.google.genai.types.UploadFileConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,24 +13,14 @@ import org.springframework.context.annotation.Configuration;
 public class ApiConfiguration {
 
 
-
     @Bean
-    public GeminiFiles filesApi(){
-        String apiKey = System.getenv("GEMINI_API_KEY");
-        return GeminiFiles.builder()
-                .apiKey(apiKey)
-                .build();
-    }
-
-    // Configuração de sistema de chat(não mandar para produção!)
-    @Bean
-    public ChatModel geminiChat(){
-        return GoogleAiGeminiChatModel
+    public Client clientAI() {
+        return Client
                 .builder()
-                .apiKey(System.getenv("GEMINI_API_KEY"))
-                .modelName("gemini-3.5-flash")
-                .responseFormat(ResponseFormat.TEXT)
+                .apiKey("AQ.Ab8RN6Jx-Q0gzlpYVyf4dUsWffuunmv2FQKuglBfn0Jt9LDyww")
                 .build();
     }
+
+
 
 }
