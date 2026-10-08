@@ -17,7 +17,7 @@ public class ApiConfiguration {
     public Client clientAI() {
         return Client
                 .builder()
-                .apiKey("GEMINI_API_KEY")
+                .apiKey("AQ.Ab8RN6Jx-Q0gzlpYVyf4dUsWffuunmv2FQKuglBfn0Jt9LDyww")
                 .build();
     }
 

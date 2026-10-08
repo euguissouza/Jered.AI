@@ -5,6 +5,8 @@ package com.api.jered.ai.api.Service;
 import com.google.genai.Client;
 
 import com.google.genai.gaos.models.interactions.*;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.Part;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.google.genai.types.Content;
 
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
@@ -22,6 +26,7 @@ import java.util.List;
 public class AiEngine {
 
     Client client = new Client();
+    String model = "gemini-3.8-flash";
 
     private ProcessadorRequest request;
 
@@ -31,18 +36,21 @@ public class AiEngine {
     }
 
     public byte[] processaDados(MultipartFile file) throws IOException {
-        Content docContent = request.uploadFile(file);
 
-        Content textContent = TextContent.builder()
-                .text("Resuma para mim esse arquivo e me devolva como .pdf")
-                .build();
+            Part filePart = Part.fromBytes(file.getBytes(), file.getContentType());
+            Part textPart = Part.fromText("Resuma para mim esse arquivo");
 
-        CreateModelInteraction llmInteraciton = CreateModelInteraction.builder()
-                .model(Model.of("gemini-3.8-flash"))
-                .input(InteractionsInput.ofContent(List.of(docContent, textContent)))
-                .build();
+            Content content = Content.builder().parts(List.of(filePart, textPart)).build();
 
-        return new byte[0];
+            GenerateContentResponse response = client.models.generateContent(
+                    model,
+                    content,
+                    null
+                    );
+
+            String responseTxt = response.text();
+
+        return responseTxt.getBytes(StandardCharsets.UTF_8);
     }
 
 
