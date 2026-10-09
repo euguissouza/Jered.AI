@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <title>Resumir material – Jared.AI</title>
 </head>
+
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
@@ -45,9 +48,77 @@
     </section>
   </main>
 
-  <footer class="rodape"><p>Jared.AI · Projeto extensionista</p></footer>
+  <footer class="rodape">
+    <p>Jared.AI · Projeto extensionista</p>
+  </footer>
 
   <script type="module" src="js/acessibilidade.js"></script>
   <script type="module" src="js/resumir.js"></script>
+
+  <script>
+const inputArquivo = document.getElementById('arquivo');
+const btnResumir = document.getElementById('btn-resumir');
+const nomeArquivoSpan = document.getElementById('nome-arquivo');
+const statusTexto = document.getElementById('status');
+const secaoResultado = document.getElementById('resultado');
+const textoResumoDiv = document.getElementById('texto-resumo');
+
+inputArquivo.addEventListener('change', () => {
+  const arquivoSelecionado = inputArquivo.files[0];
+
+  if (arquivoSelecionado) {
+    btnResumir.disabled = false;
+    nomeArquivoSpan.textContent = arquivoSelecionado.name;
+  } else {
+    btnResumir.disabled = true;
+    nomeArquivoSpan.textContent = '';
+  }
+});
+
+btnResumir.addEventListener('click', async () => {
+  const arquivo = inputArquivo.files[0];
+
+  if (!arquivo) return;
+
+  btnResumir.disabled = true;
+  statusTexto.hidden = false;
+  statusTexto.textContent = "Lendo o arquivo e gerando resumo, por favor aguarde...";
+  secaoResultado.hidden = true;
+
+  // 1. Criar o objeto FormData que o Spring espera
+  const formData = new FormData();
+  
+  // 2. Adicionar o ficheiro à chave 'file' (ou 'arquivo', conforme configuraste no @RequestParam do Spring)
+  formData.append('file', arquivo); 
+
+  try {
+    const resposta = await fetch('http://localhost:8080/api/jered/post', {
+      method: 'POST',
+      body: formData // <--- Enviamos o formData em vez do arquivo direto
+      // NOTA: Não adicionamos o objeto 'headers' aqui! O navegador adiciona o 'Content-Type: multipart/form-data' automaticamente.
+    });
+
+    if (!resposta.ok) {
+      throw new Error(`Erro de comunicação: ${resposta.status}`);
+    }
+
+    // Lê a resposta como texto simples em vez de JSON
+    const textoDoBackend = await resposta.text();
+
+    textoResumoDiv.innerHTML = `<p>${textoDoBackend}</p>`;
+
+    secaoResultado.hidden = false;
+    secaoResultado.focus();
+    statusTexto.hidden = true;
+
+  } catch (erro) {
+    console.error("Falha ao comunicar com a API:", erro);
+    statusTexto.textContent = "Ocorreu um erro ao gerar o resumo. Verifique se o servidor backend está ligado.";
+  } finally {
+    btnResumir.disabled = false;
+  }
+});
+  </script>
 </body>
+
 </html>

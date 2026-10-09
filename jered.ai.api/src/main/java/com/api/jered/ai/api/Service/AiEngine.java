@@ -38,7 +38,7 @@ public class AiEngine {
     public byte[] processaDados(MultipartFile file) throws IOException {
 
             Part filePart = Part.fromBytes(file.getBytes(), file.getContentType());
-            Part textPart = Part.fromText("Resuma para mim esse arquivo");
+            Part textPart = Part.fromText("Resuma para mim esse arquivo e me devolva como um pdf");
 
             Content content = Content.builder().parts(List.of(filePart, textPart)).build();
 
@@ -52,7 +52,6 @@ public class AiEngine {
 
         return responseTxt.getBytes(StandardCharsets.UTF_8);
     }
-
 
     public ResponseEntity<byte[]> geraDownload(@Param("file")  MultipartFile file) throws IOException {
         byte[] geraDoc = processaDados(file);

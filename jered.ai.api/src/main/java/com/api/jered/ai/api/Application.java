@@ -12,9 +12,9 @@ import org.springframework.context.ApplicationContext;
 		public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(Application.class, args);
 		System.out.println("Jered está ATIVO!!!");
-		System.out.println("====================================================");
-		System.out.println("JERED.AI - V:0.0.2 - ALPLHATEST - CHAT TERMINAL");
-		System.out.println("====================================================");
+		System.out.println("=================================");
+		System.out.println("JERED.AI - V:0.0.3 - AlphaTest");
+		System.out.println("=================================");
 
 		AiEngine engine = context.getBean(AiEngine.class);
 
