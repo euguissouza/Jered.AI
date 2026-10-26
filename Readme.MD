@@ -4,6 +4,7 @@ O binário de execusão da api está na pasta "jered.ai-bin", segue a baixo as r
 
 ### Rota 
     End-point de conexão: http://localhost:8080/api/jered/post
+    End-point de Download(Direcionamento automático): http://localhost:8080/api/jered/download
 
 Note que a url roda de forma local, mas pode ser hospedado em um servidor a parte. 
 
