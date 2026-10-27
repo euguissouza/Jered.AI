@@ -1,6 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Jered.AI-bin">
-    <output-path>$PROJECT_DIR$/jered-bin</output-path>
-    <root id="archive" name="Jered.AI-bin.jar" />
-  </artifact>
-</component>
