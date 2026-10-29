@@ -30,16 +30,13 @@ public class AiEngine {
     Client client = new Client();
     String model = "gemini-3.8-flash";
 
-    private ProcessadorRequest request;
-
-    public AiEngine(@Lazy ProcessadorRequest request, Client client) {
-        this.request = request;
+    public AiEngine( Client client) {
         this.client = client;
     }
 
     public byte[] processaDados(MultipartFile file) throws IOException {
 
-            Part filePart = Part.fromBytes(file.getBytes(), file.getContentType());
+            Part filePart ;
             ClassPathResource markFile = new ClassPathResource("/Tool/prompt.md");
             String dataMark = StreamUtils.copyToString(markFile.getInputStream(), StandardCharsets.UTF_8);
             Part prompt = Part.fromText(dataMark);
@@ -55,14 +52,6 @@ public class AiEngine {
             String responseTxt = response.text();
 
         return responseTxt.getBytes(StandardCharsets.UTF_8);
-    }
-
-    public ResponseEntity<byte[]> geraDownload(@Param("file")  MultipartFile file) throws IOException {
-        byte[] geraDoc = processaDados(file);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "imagem_gerada.png");
-        return ResponseEntity.ok().headers(headers).body(geraDoc);
     }
 
 }

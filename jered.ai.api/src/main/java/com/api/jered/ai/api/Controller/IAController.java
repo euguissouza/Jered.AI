@@ -1,15 +1,17 @@
 package com.api.jered.ai.api.Controller;
 
 
-import com.api.jered.ai.api.Service.AiEngine;
+
+import com.api.jered.ai.api.ArquivosJered.Arquivos;
 import com.api.jered.ai.api.Service.ProcessadorRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.resource.ResourceUrlProvider;
 
 import java.io.IOException;
+import java.net.URI;
 
 @Controller
 @RequestMapping("/api/jered")
@@ -18,24 +20,23 @@ public class IAController {
 
 
     private ProcessadorRequest request;
-    private AiEngine engine;
 
-    public IAController(ProcessadorRequest request, AiEngine engine) {
+    public IAController(ProcessadorRequest request) {
         this.request = request;
-        this.engine = engine;
     }
 
 
     @PostMapping("/post")
-    public String upload(@RequestParam("file")MultipartFile file)throws IOException{
-        request.uploadFile(file);
-
-        return "redirect:/api/jered/download";
+    public ResponseEntity<Void> upload(@RequestParam("file") Arquivos arquivos) throws IOException {
+        request.uploadFile(arquivos);
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI.create("/api/jered/download"))
+                .build();
     }
 
-    @PostMapping("/download")
-    public ResponseEntity<byte[]> get(@RequestParam("file")MultipartFile file) throws IOException {
-        return engine.geraDownload(file);
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> download(MultipartFile file) throws IOException {
+        return request.geraDownload(file); // usa o resultado já gerado
     }
 
 
