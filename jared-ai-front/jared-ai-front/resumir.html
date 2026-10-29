@@ -25,99 +25,137 @@
 
   <main id="conteudo" class="estreito">
     <h1>Resumir material de estudo</h1>
-    <p>Aceitamos PDF, Word (.doc, .docx) e TXT, até 10 MB.</p>
+    <p>Aceitamos apenas arquivos PDF, até 10 MB.</p>
 
     <label id="zona-upload" class="zona" for="arquivo">
       <span class="zona-titulo">Arraste o arquivo até aqui</span>
       <span>ou clique para escolher no computador</span>
       <strong id="nome-arquivo"></strong>
-      <input id="arquivo" class="so-leitor" type="file" accept=".pdf,.doc,.docx,.txt">
+      <input id="arquivo" class="so-leitor" type="file" accept=".pdf,application/pdf">
     </label>
 
     <button id="btn-resumir" class="botao" type="button" disabled>Gerar resumo</button>
     <p id="status" role="status" aria-live="polite" hidden></p>
-
-    <section id="resultado" class="resultado" tabindex="-1" hidden aria-labelledby="titulo-resumo">
-      <h2 id="titulo-resumo">Seu resumo</h2>
-      <div id="texto-resumo"></div>
-      <div class="acoes">
-        <button id="btn-ouvir" class="botao-sec" type="button">Ouvir</button>
-        <button id="btn-parar" class="botao-sec" type="button">Parar áudio</button>
-        <button id="btn-copiar" class="botao-sec" type="button">Copiar texto</button>
-      </div>
-    </section>
   </main>
+
+  <!-- Tela de carregamento / arquivo gerado -->
+  <div id="tela-status" class="tela" role="dialog" aria-modal="true" aria-labelledby="tela-titulo" tabindex="-1" hidden>
+    <div class="tela-caixa">
+      <div id="indicador" class="loader" aria-hidden="true"></div>
+      <h2 id="tela-titulo">Gerando resumo</h2>
+      <p id="tela-texto">Isso pode levar alguns instantes. Por favor, aguarde.</p>
+      <button id="btn-novamente" class="botao" type="button" hidden>Resumir novamente</button>
+    </div>
+  </div>
 
   <footer class="rodape">
     <p>Jared.AI · Projeto extensionista</p>
   </footer>
 
   <script type="module" src="js/acessibilidade.js"></script>
-  <script type="module" src="js/resumir.js"></script>
 
   <script>
-const inputArquivo = document.getElementById('arquivo');
-const btnResumir = document.getElementById('btn-resumir');
-const nomeArquivoSpan = document.getElementById('nome-arquivo');
-const statusTexto = document.getElementById('status');
-const secaoResultado = document.getElementById('resultado');
-const textoResumoDiv = document.getElementById('texto-resumo');
+    const URL_POST = 'http://localhost:8080/api/jered/post';
 
-inputArquivo.addEventListener('change', () => {
-  const arquivoSelecionado = inputArquivo.files[0];
+    const inputArquivo   = document.getElementById('arquivo');
+    const btnResumir     = document.getElementById('btn-resumir');
+    const nomeArquivo    = document.getElementById('nome-arquivo');
+    const statusTexto    = document.getElementById('status');
+    const tela           = document.getElementById('tela-status');
+    const indicador      = document.getElementById('indicador');
+    const telaTitulo     = document.getElementById('tela-titulo');
+    const telaTexto      = document.getElementById('tela-texto');
+    const btnNovamente   = document.getElementById('btn-novamente');
 
-  if (arquivoSelecionado) {
-    btnResumir.disabled = false;
-    nomeArquivoSpan.textContent = arquivoSelecionado.name;
-  } else {
-    btnResumir.disabled = true;
-    nomeArquivoSpan.textContent = '';
-  }
-});
-
-btnResumir.addEventListener('click', async () => {
-  const arquivo = inputArquivo.files[0];
-
-  if (!arquivo) return;
-
-  btnResumir.disabled = true;
-  statusTexto.hidden = false;
-  statusTexto.textContent = "Lendo o arquivo e gerando resumo, por favor aguarde...";
-  secaoResultado.hidden = true;
-
-  // 1. Criar o objeto FormData que o Spring espera
-  const formData = new FormData();
-  
-  // 2. Adicionar o ficheiro à chave 'file' (ou 'arquivo', conforme configuraste no @RequestParam do Spring)
-  formData.append('file', arquivo); 
-
-  try {
-    const resposta = await fetch('http://localhost:8080/api/jered/post', {
-      method: 'POST',
-      body: formData // <--- Enviamos o formData em vez do arquivo direto
-      // NOTA: Não adicionamos o objeto 'headers' aqui! O navegador adiciona o 'Content-Type: multipart/form-data' automaticamente.
-    });
-
-    if (!resposta.ok) {
-      throw new Error(`Erro de comunicação: ${resposta.status}`);
+    function mostrarErro(msg) {
+      statusTexto.hidden = false;
+      statusTexto.dataset.tipo = 'erro';
+      statusTexto.textContent = msg;
     }
 
-    // Lê a resposta como texto simples em vez de JSON
-    const textoDoBackend = await resposta.text();
+    function telaGerando() {
+      indicador.className = 'loader';
+      telaTitulo.textContent = 'Gerando resumo';
+      telaTexto.textContent = 'Isso pode levar alguns instantes. Por favor, aguarde.';
+      btnNovamente.hidden = true;
+      tela.hidden = false;
+      tela.focus();
+    }
 
-    textoResumoDiv.innerHTML = `<p>${textoDoBackend}</p>`;
+    function telaGerado() {
+      indicador.className = 'check';
+      indicador.textContent = '✓';
+      telaTitulo.textContent = 'Arquivo gerado';
+      telaTexto.textContent = 'Seu resumo foi criado com sucesso.';
+      btnNovamente.hidden = false;
+      btnNovamente.focus();
+    }
 
-    secaoResultado.hidden = false;
-    secaoResultado.focus();
-    statusTexto.hidden = true;
+    function reiniciar() {
+      inputArquivo.value = '';
+      nomeArquivo.textContent = '';
+      btnResumir.disabled = true;
+      statusTexto.hidden = true;
+      indicador.textContent = '';
+      tela.hidden = true;
+      inputArquivo.focus();
+    }
 
-  } catch (erro) {
-    console.error("Falha ao comunicar com a API:", erro);
-    statusTexto.textContent = "Ocorreu um erro ao gerar o resumo. Verifique se o servidor backend está ligado.";
-  } finally {
-    btnResumir.disabled = false;
-  }
-});
+    inputArquivo.addEventListener('change', () => {
+      const arquivo = inputArquivo.files[0];
+      statusTexto.hidden = true;
+
+      if (!arquivo) {
+        btnResumir.disabled = true;
+        nomeArquivo.textContent = '';
+        return;
+      }
+
+      const ehPdf = arquivo.type === 'application/pdf' || arquivo.name.toLowerCase().endsWith('.pdf');
+      if (!ehPdf) {
+        inputArquivo.value = '';
+        btnResumir.disabled = true;
+        nomeArquivo.textContent = '';
+        mostrarErro('Envie apenas arquivos em formato PDF.');
+        return;
+      }
+
+      btnResumir.disabled = false;
+      nomeArquivo.textContent = arquivo.name;
+    });
+
+    btnResumir.addEventListener('click', async () => {
+      const arquivo = inputArquivo.files[0];
+      if (!arquivo) return;
+
+      btnResumir.disabled = true;
+      statusTexto.hidden = true;
+      telaGerando();
+
+      const formData = new FormData();
+      formData.append('file', arquivo); // nome do @RequestParam no Spring
+
+      try {
+        // O fetch segue automaticamente o redirect da API até /api/jered/download
+        const resposta = await fetch(URL_POST, { method: 'POST', body: formData });
+
+        if (!resposta.ok) {
+          throw new Error(`Erro de comunicação: ${resposta.status}`);
+        }
+
+        // Não precisamos ler o corpo do arquivo, só confirmar que chegou ao download
+        if (resposta.body) resposta.body.cancel();
+
+        telaGerado();
+      } catch (erro) {
+        console.error('Falha ao comunicar com a API:', erro);
+        tela.hidden = true;
+        mostrarErro('Ocorreu um erro ao gerar o resumo. Verifique se o servidor backend está ligado.');
+        btnResumir.disabled = false;
+      }
+    });
+
+    btnNovamente.addEventListener('click', reiniciar);
   </script>
 </body>
 
