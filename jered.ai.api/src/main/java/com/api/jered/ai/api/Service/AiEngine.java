@@ -2,6 +2,7 @@ package com.api.jered.ai.api.Service;
 
 
 
+import com.api.jered.ai.api.ArquivosJered.Arquivos;
 import com.google.genai.Client;
 
 import com.google.genai.gaos.models.interactions.*;
@@ -30,18 +31,15 @@ public class AiEngine {
     Client client = new Client();
     String model = "gemini-3.8-flash";
 
-    public AiEngine( Client client) {
-        this.client = client;
-    }
 
-    public byte[] processaDados(MultipartFile file) throws IOException {
 
-            Part filePart ;
+    public byte[] processaDados(MultipartFile arquivos) throws IOException {
+            Part toIA = Part.fromBytes(arquivos.getBytes(), arquivos.getContentType());
             ClassPathResource markFile = new ClassPathResource("/Tool/prompt.md");
             String dataMark = StreamUtils.copyToString(markFile.getInputStream(), StandardCharsets.UTF_8);
             Part prompt = Part.fromText(dataMark);
 
-            Content content = Content.builder().parts(List.of(filePart, prompt)).build();
+            Content content = Content.builder().parts(List.of(toIA, prompt)).build();
 
             GenerateContentResponse response = client.models.generateContent(
                     model,

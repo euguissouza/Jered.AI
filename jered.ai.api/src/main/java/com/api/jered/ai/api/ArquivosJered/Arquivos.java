@@ -1,7 +1,9 @@
 package com.api.jered.ai.api.ArquivosJered;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+@Component
 public class Arquivos {
     private MultipartFile file;
 

@@ -3,7 +3,8 @@ package com.api.jered.ai.api.Controller;
 
 
 import com.api.jered.ai.api.ArquivosJered.Arquivos;
-import com.api.jered.ai.api.Service.ProcessadorRequest;
+import com.api.jered.ai.api.Service.DownloadService;
+import com.api.jered.ai.api.Service.UploadService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,16 +20,18 @@ import java.net.URI;
 public class IAController {
 
 
-    private ProcessadorRequest request;
+    private DownloadService downloadService;
+    private UploadService uploadService;
 
-    public IAController(ProcessadorRequest request) {
-        this.request = request;
+    public IAController(DownloadService service,UploadService uploadService) {
+        this.downloadService = service;
+        this.uploadService = uploadService;
     }
 
 
     @PostMapping("/post")
-    public ResponseEntity<Void> upload(@RequestParam("file") Arquivos arquivos) throws IOException {
-        request.uploadFile(arquivos);
+    public ResponseEntity<Void> upload(@RequestParam("file")MultipartFile file) throws Exception {
+        uploadService.uploadFile(file);
         return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .location(URI.create("/api/jered/download"))
                 .build();
@@ -36,9 +39,7 @@ public class IAController {
 
     @GetMapping("/download")
     public ResponseEntity<byte[]> download(MultipartFile file) throws IOException {
-        return request.geraDownload(file); // usa o resultado já gerado
+        return downloadService.geraDownload(file);
     }
-
-
 
 }
